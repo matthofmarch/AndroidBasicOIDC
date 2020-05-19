@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.okta.oidc.AuthorizationStatus
-import com.okta.oidc.OIDCConfig
-import com.okta.oidc.Okta
-import com.okta.oidc.ResultCallback
+import com.okta.oidc.*
 import com.okta.oidc.storage.SharedPreferenceStorage
 import com.okta.oidc.util.AuthorizationException
 import java.util.concurrent.Executors
@@ -52,5 +49,13 @@ class MainActivity : AppCompatActivity() {
             }
 
         }, this)
+
+        if (!webAuthClient.sessionClient.isAuthenticated) {
+            webAuthClient.signIn(
+                this, AuthenticationPayload.Builder()
+                    .setLoginHint("Hint: Enter your password")
+                    .build()
+            )
+        }
     }
 }
