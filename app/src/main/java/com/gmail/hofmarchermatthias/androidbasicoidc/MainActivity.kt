@@ -19,11 +19,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val config = OIDCConfig.Builder()
-            .clientId("0oach4dlaCXy1Azzu4x6")
-            .redirectUri("com.okta.dev-403499:/login")
-            .endSessionRedirectUri("com.okta.dev-403499:/logout")
-            .scopes("openid", "profile", "offline_access")
-            .discoveryUri("https://dev-403499.okta.com")
+            .clientId("0oaclbqygEZYNsxgo4x6")
+            .redirectUri("com.okta.dev-142408:/login")
+            .endSessionRedirectUri("com.okta.dev-142408:/logout")
+            .scopes("openid", "email", "profile", "offline_access")
+            .discoveryUri("https://dev-142408.okta.com")
             .create()
 
         val webAuthClient = Okta.WebAuthBuilder()
@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity() {
              }
 
             override fun onCancel() {
-                Log.d(this.javaClass.simpleName, "SignInCancel")            }
+                Log.d(this.javaClass.simpleName, "SignInCancel")
+            }
 
             override fun onError(msg: String?, exception: AuthorizationException?) {
                 Log.d(this.javaClass.simpleName, "SignInError")
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity() {
 
         btn_signin.setOnClickListener {
             webAuthClient.signIn(this, null)
+        }
+
+        if(webAuthClient.sessionClient.isAuthenticated){
+            getUserInfo(webAuthClient)
         }
     }
 

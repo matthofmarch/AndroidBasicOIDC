@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders= [
-                "appAuthRedirectScheme": "com.okta.dev-403499"
+                "appAuthRedirectScheme": "com.okta.dev-142408"
         ]
 
         compileOptions {
