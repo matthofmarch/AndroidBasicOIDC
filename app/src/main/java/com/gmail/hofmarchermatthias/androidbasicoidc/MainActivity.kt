@@ -1,13 +1,15 @@
 package com.gmail.hofmarchermatthias.androidbasicoidc
 
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.okta.oidc.*
+import com.okta.oidc.clients.web.WebAuthClient
+import com.okta.oidc.net.response.UserInfo
 import com.okta.oidc.storage.SharedPreferenceStorage
 import com.okta.oidc.util.AuthorizationException
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -28,34 +30,51 @@ class MainActivity : AppCompatActivity() {
             .withConfig(config)
             .withContext(this)
             .withStorage(SharedPreferenceStorage(this))
-            .withCallbackExecutor(Executors.newSingleThreadExecutor())
-            .supportedBrowsers("com.android.chrome", "org.mozilla.firefox")
+            .setRequireHardwareBackedKeyStore(false)
             .create()
 
         webAuthClient.registerCallback(object: ResultCallback<AuthorizationStatus,
                 AuthorizationException>{
             override fun onSuccess(result: AuthorizationStatus) {
-                Toast.makeText(this@MainActivity, "Your in!", Toast.LENGTH_LONG).show()
-                Log.d(this.javaClass.simpleName, "SignInSuccess")
+                when(result){
+                    AuthorizationStatus.AUTHORIZED->{
+                        Log.d(this.javaClass.simpleName, "SignInSuccess")
+                        getUserInfo(webAuthClient)
+                    }
+                    AuthorizationStatus.SIGNED_OUT->{
+                        Log.d(this.javaClass.simpleName, "SignOutSuccess")
+                    }
+                }
+
              }
 
             override fun onCancel() {
-                Toast.makeText(this@MainActivity, "Login cancelled!", Toast.LENGTH_LONG).show()
                 Log.d(this.javaClass.simpleName, "SignInCancel")            }
 
             override fun onError(msg: String?, exception: AuthorizationException?) {
-                Toast.makeText(this@MainActivity, "Something went wrong, please try again!", Toast.LENGTH_LONG).show()
                 Log.d(this.javaClass.simpleName, "SignInError")
             }
 
         }, this)
 
-        if (!webAuthClient.sessionClient.isAuthenticated) {
-            webAuthClient.signIn(
-                this, AuthenticationPayload.Builder()
-                    .setLoginHint("Hint: Enter your password")
-                    .build()
-            )
+        btn_signin.setOnClickListener {
+            webAuthClient.signIn(this, null)
         }
     }
+
+    private fun getUserInfo(webAuthClient: WebAuthClient) {
+        webAuthClient.sessionClient.getUserProfile(object: RequestCallback<UserInfo,
+                AuthorizationException>{
+            override fun onSuccess(result: UserInfo) {
+                tv_userinfo.text = result["email"] as String
+            }
+
+            override fun onError(error: String?, exception: AuthorizationException?) {
+
+                Log.d(this.javaClass.simpleName, "Unable to get userinfo")
+            }
+
+        })
+    }
+
 }

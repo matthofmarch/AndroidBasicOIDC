@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.gmail.hofmarchermatthias.androidbasicoidc"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -16,8 +16,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders= [
-                "appAuthRedirectScheme": "https://dev-403499.okta.com"
+                "appAuthRedirectScheme": "com.okta.dev-403499"
         ]
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
     }
 
     buildTypes {
